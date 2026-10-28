@@ -1,105 +1,98 @@
 #include <stdio.h>
 #include <math.h>
-#define MAX 20 //Define o número máximo de leituras que podem ser feitas.
-int main()
+int main(void)
 {
-    // Declaração de leitura de variáveis
-double Dado;
-int número [MAX+1];
-    printf("Programa de leitura do sensor de temperatura\n");
-    printf("Para sair do programa digite: -1\n");
-    printf("Indique o número de leituras que deseja fazer (inteiro entre 1 e %d):", MAX);
-       if( scanf("%d",&número[0]) !=1 )
+    int valorsensor;
+    int namostras;
+    int nleituras;
+    double temp;
+    double somadequadrados = 0;
+    double media;
+    double desviopadrao;
+    double soma = 0;
+    int valoreslidos = 0;
+    int n;
+    printf("_________________________________________________\n\n");
+    printf("           Calculadora de temperatura\n");
+    printf("_________________________________________________\n\n");
+    printf("Se pretende sair do programa digite o número -1 !\n\n");
+    printf("Quantas amostras pretende ler?");
+    while (scanf(" %d",&namostras) != 1 || namostras <= 0)
+    {
+        printf("Valor rejeitado, insira um número inteiro positivo.\n");
+        while(getchar()!='\n') {}
+        printf("Quantas amostras pretende ler?");
+    }
+    double valoresdados[namostras];
+    double resultados[namostras];
+    double maximo = valoresdados[n];
+    double minimo = valoresdados[n];
+    for (nleituras = 0; nleituras < namostras; nleituras++){
+        printf("\nValor do sensor (inteiro entre 0 e 1023):");
+
+        if (scanf(" %d",&valorsensor) != 1)
         {
-            printf("Quantidade invalida\n");
-            return 1;
+            nleituras == nleituras + 1;
+            printf("Valor rejeitado, insira um número inteiro.\n");
+            while(getchar()!='\n') {}
+            valoreslidos += 0;
         }
-
-        if (número[0] == -1)
+        else
         {
-            printf("Programa terminado\n");
-            return 0;
-        }
-
-        if (número[0] < 1 || número[0] > MAX)
-        {
-            printf("Quantidade invalida\n");
-            return 1;
-        }
-    // Loop para ler os valores do sensor
-    for (int leitura = 1; leitura <= número[0]; leitura++) {
-    int Dado;
-
-    while (1) {
-            printf("Valor do sensor (0 a 1023, ou -1 para terminar): ");    
-
-            if (scanf("%d", &Dado) != 1) {
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF) {}
-                printf("Valor inválido. Tente novamente.\n");
-                continue;
+            temp = 260.0*valorsensor/1023-20;
+            if (valorsensor == -1)
+            {
+                break;
+            }
+            else if (temp > -10 && temp < 190)
+            {
+                printf("O valor da temperatura é: %.2f ºC\n", temp);
+                valoresdados[valoreslidos] = valorsensor;
+                resultados[valoreslidos] = temp;
+                if(valoreslidos == 0)
+                {
+                    maximo = temp;
+                    minimo = temp;
                 }
-
-            if (Dado == -1) {
-            número[0] = leitura - 1;  // quantidade realmente recolhida
-            break;
+                else
+                {
+                    if (temp > maximo)
+                    {
+                        maximo = temp;
+                    }
+                    if (temp < minimo)
+                    {
+                        minimo = temp;
+                    }
+                }
+                soma += temp;
+                somadequadrados += temp * temp;
+                valoreslidos++;
             }
-
-            double resultado = 260.0 * Dado / 1023.0 - 20.0;
-
-            if (Dado < 0 || Dado > 1023 || resultado < -10 || resultado > 190) {
-            printf("Valor inválido ou fora da gama. Tente novamente.\n");
-            continue;
+            else
+            {
+                printf("Valor fora da gama.\n");
             }
-
-            número[leitura] = Dado;
-            break;
-        }
-
-        if (Dado == -1) {
-        break;  // sai da recolha, mas continua para a tabela e estatísticas
         }
     }
-    printf("\n");
-    // Loop para calcular e exibir os resultados
-    for (int leitura = 1; leitura <= número[0]; leitura++)
+    if (valoreslidos > 0)
     {
-            float Temperatura = 260*((float)número[leitura])/1023-20;
-        printf("Valor inserido: %d | Temperatura: %.2f ºC\n",
-           número[leitura], Temperatura );
-    }    
-    printf("\n");
-    // Estatísticas
-    if (número[0] == 0) {
-    printf("Não foram inseridos valores.\n");
-} else {
+        media = soma / valoreslidos;
+        desviopadrao = sqrt(somadequadrados / valoreslidos - (media * media));
+    }
+    else
+    {
+        media = 0;
+        desviopadrao = 0;
+    }
+    printf("\nValores lidos ( sensor -> temperatura ):\n\n");
+    for(int i=0; i < valoreslidos; i++){
+        printf(" %.0f -> %.2f\n", valoresdados[i], resultados[i]);
+    }
     
-    float soma = 0, media, desvio_padrao, min = 190, max = -10;
-    for (int leitura = 1; leitura <= número[0]; leitura++)
-    {
-        float Temperatura = 260*((float)número[leitura])/1023-20;
-        soma += Temperatura;
-        if (Temperatura < min)
-            min = Temperatura;
-        if (Temperatura > max)
-            max = Temperatura;
-    }
-    media = soma / número[0];
-    
-    // Cálculo do desvio padrão
-    float soma_quadrados = 0;
-    for (int leitura = 1; leitura <= número[0]; leitura++)
-    {
-        float Temperatura = 260*((float)número[leitura])/1023-20;
-        soma_quadrados += (Temperatura - media) * (Temperatura - media);
-    }
-    desvio_padrao = sqrt(soma_quadrados / número[0]);  
-
-    printf("Estatísticas:\n");
-    printf("Número de leituras: %d\n", número[0]);
-    printf("Temperatura Média: %.2f ºC\n", media);
-    printf("Temperatura Mínima: %.2f ºC\n", min);
-    printf("Temperatura Máxima: %.2f ºC\n", max);
-    printf("Desvio Padrão: %.2f ºC\n", desvio_padrao);
-    }
-}    
+    printf("\nNº de valores lidos: %d\n",valoreslidos);
+    printf("Temperatura máxima: %.2f ºC\n",maximo);
+    printf("Temperatura mínima: %.2f ºC\n",minimo);
+    printf("Temperatura média: %.2f ºC\n",media);
+    printf("Desvio-padrão: %.2f\n",desviopadrao);
+}
