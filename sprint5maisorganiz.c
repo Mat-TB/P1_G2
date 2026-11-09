@@ -38,7 +38,7 @@ int main(void){
 
 
 void imprime_lista(int *p, int N){
-
+//esta função imprime a lista dos valores e a sua respetiva temperatura
     printf("\nValores lidos ( sensor -> temperatura ):\n\n");
     for(int i=0; i < N; i++){
         printf(" %d -> %.2f\n", p[i], converter(&p[i]));
